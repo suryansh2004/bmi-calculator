@@ -1,5 +1,5 @@
 import "package:flutter/material.dart";
-import 'package:learning_flutter/screens/splash.dart';
+import 'screens/splash.dart';
 import 'screens/screen.dart';
 
 void main() => runApp(const BMIapp());
