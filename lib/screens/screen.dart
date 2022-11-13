@@ -1,4 +1,7 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:localstorage/localstorage.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -9,7 +12,21 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
   double _height = 0, _weight = 0, _result = 0;
-  final List<Map<String, double>> _history = [];
+  List<dynamic> _history = [];
+  final LocalStorage storage = LocalStorage('history.json');
+  final encoder = const JsonEncoder();
+  final decoder = const JsonDecoder();
+
+  @override
+  void initState() {
+    dynamic data = storage.getItem('data');
+    if (data != null) {
+      _history = decoder.convert(data);
+    } else {
+      _history = [];
+    }
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -21,6 +38,17 @@ class _HomeState extends State<Home> {
       drawer: Drawer(
         child: Scaffold(
           appBar: AppBar(
+            actions: [
+              IconButton(
+                onPressed: () {
+                  storage.clear();
+                  setState(() {
+                    _history = [];
+                  });
+                },
+                icon: const Icon(Icons.delete),
+              ),
+            ],
             centerTitle: false,
             automaticallyImplyLeading: false,
             title: const Text(
@@ -98,6 +126,7 @@ class _HomeState extends State<Home> {
                       "result": double.parse(_result.toStringAsFixed(2))
                     },
                   );
+                  storage.setItem("data", encoder.convert(_history));
                 },
               ),
               style: ElevatedButton.styleFrom(
